@@ -26,18 +26,32 @@ class Game():
         exit = Text(70, (self.SCREEN_WIDTH / 2, start.rect.bottom + 50), 'Exit')
         self.startText = pygame.sprite.Group(gameName, start, exit)
 
+        self.arrows = TextArrows([start.rect, exit.rect])
+
+    def quit(self):
+        pygame.quit()
+        exit()
 
     def run(self):
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    exit()
+                    self.quit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        self.arrows.moveUp()
+                    elif event.key == pygame.K_DOWN:
+                        self.arrows.moveDown()
+                    elif event.key == pygame.K_RETURN and self.arrows.index:
+                        self.quit()
+                        
 
             self.background.draw(self.screen)
 
             self.startText.update()
             self.startText.draw(self.screen)
+            
+            self.arrows.draw(self.screen)
 
             pygame.display.update()
             self.clock.tick()
