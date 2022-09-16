@@ -13,3 +13,11 @@ class Background(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load(path).convert()
         self.rect = self.image.get_rect( topleft = pos )
+
+class Text(pygame.sprite.Sprite):
+    def __init__(self, font_size, pos, text, color='Black'):
+        super().__init__()
+
+        self.text_font = pygame.font.Font('./fonts/Pixeltype.ttf', font_size)
+        self.image = self.text_font.render(text, False, color)
+        self.rect = self.image.get_rect( center = pos )
