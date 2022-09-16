@@ -13,12 +13,18 @@ class Game():
 
         pygame.display.set_caption(title)
 
+        pygame.mouse.set_visible(False)
+
         self.clock = Clock(60)
 
         sky = Background('./images/sky.png', (0, 0))
         ground = Background('./images/ground.png', sky.rect.bottomleft)
-
         self.background = pygame.sprite.Group(sky ,ground)
+
+        gameName = Text(150, (self.SCREEN_WIDTH / 2, 100), 'Runner')
+        start = Text(70, (self.SCREEN_WIDTH / 2, gameName.rect.bottom + 50), 'Start')
+        exit = Text(70, (self.SCREEN_WIDTH / 2, start.rect.bottom + 50), 'Exit')
+        self.startText = pygame.sprite.Group(gameName, start, exit)
 
 
     def run(self):
@@ -29,6 +35,9 @@ class Game():
                     exit()
 
             self.background.draw(self.screen)
+
+            self.startText.update()
+            self.startText.draw(self.screen)
 
             pygame.display.update()
             self.clock.tick()
