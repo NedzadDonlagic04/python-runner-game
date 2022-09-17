@@ -104,11 +104,15 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 0
         self.jumpState = False
 
+        self.jumpSound = pygame.mixer.Sound('./sounds/playerJump.mp3')
+        self.jumpSound.set_volume(0.3)
+
     def update(self, jump=False):
         if jump and self.jumpState == False:
             self.gravity = -22
             self.jumpState = True
             self.image = self.jump
+            self.jumpSound.play()
 
         if not self.jumpState:
             self.count += 1
@@ -126,3 +130,33 @@ class Player(pygame.sprite.Sprite):
                 self.jumpState = False
                 self.rect.bottom = self.originalPos
 
+class PlayerScore():
+    def __init__(self, font_size, width):
+        self.text = Text(font_size, (width / 2, 50), 'Score:')
+        self.pos = self.text.rect.center
+
+        self.num = 0
+        self.font_size = font_size
+
+        self.score = Text(font_size, self.text.rect.center, self.num)
+        self.score.rect.left = self.text.rect.right + 10
+
+        self.start_time = None
+    
+    @property
+    def num(self):
+        return self._num
+
+    @num.setter
+    def num(self, value):
+        value = int(value / 1000)
+        self._num = str(value)
+    
+    def update(self, time):
+        self.num = time - self.start_time
+        self.score = Text(self.font_size, self.pos, self.num)
+        self.score.rect.left = self.text.rect.right + 10
+    
+    def draw(self, screen):
+        screen.blit(self.text.image, self.text.rect)
+        screen.blit(self.score.image, self.score.rect)
