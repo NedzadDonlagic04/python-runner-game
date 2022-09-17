@@ -160,3 +160,31 @@ class PlayerScore():
     def draw(self, screen):
         screen.blit(self.text.image, self.text.rect)
         screen.blit(self.score.image, self.score.rect)
+
+class Mob(pygame.sprite.Sprite):
+    def __init__(self, mob, pos):
+        super().__init__()
+
+        if mob == 'snail':
+            self.mob1 = pygame.image.load('./images/snail/snail1.png').convert_alpha()
+            self.mob2 = pygame.image.load('./images/snail/snail2.png').convert_alpha()
+        else:
+            self.mob1 = pygame.image.load('./images/fly/fly1.png').convert_alpha()
+            self.mob2 = pygame.image.load('./images/fly/fly2.png').convert_alpha()
+
+        self.image = self.mob1
+        self.rect = self.image.get_rect( bottomleft = pos)
+
+        self.count = 0
+    
+    def update(self):
+        self.count += 1
+        self.rect.left -= 5
+
+        if self.count == 8:
+            self.count = 0
+            self.image = self.mob2 if self.image != self.mob2 else self.mob1
+        
+        if self.rect.right < 0:
+            self.kill()
+    
