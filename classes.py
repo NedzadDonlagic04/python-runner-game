@@ -1,3 +1,4 @@
+from re import S
 import pygame
 import math
 
@@ -17,9 +18,10 @@ class Background():
 
         self.count = math.ceil( SCREEN_WIDTH / self.image.get_width() ) + 1
         self.scroll = 0
+        self.speed = 1
 
     def update(self):
-        self.scroll -= 1
+        self.scroll -= self.speed
 
         if self.scroll < self.image.get_width() * -1:
             self.scroll = 0
@@ -85,3 +87,43 @@ class TextArrows():
         else:
             self.index += 1
         self.sound.play()
+
+class Player(pygame.sprite.Sprite):
+    def __init__(self, pos):
+        super().__init__()
+
+        self.walk1 = pygame.image.load('./images/player/player_walk_1.png').convert_alpha()
+        self.walk2 = pygame.image.load('./images/player/player_walk_2.png').convert_alpha()
+        self.jump = pygame.image.load('./images/player/jump.png').convert_alpha()
+        self.fall = pygame.image.load('./images/player/fall.png').convert_alpha()
+
+        self.image = self.walk1
+        self.rect = self.image.get_rect( bottomleft = pos)
+
+        self.count = 0
+        self.originalPos = self.rect.bottom
+        self.gravity = 0
+        self.jumpState = False
+
+    def update(self, jump=False):
+        if jump and self.jumpState == False:
+            self.gravity = -22
+            self.jumpState = True
+            self.image = self.jump
+
+        if not self.jumpState:
+            self.count += 1
+            if self.count == 8:
+                self.count = 0
+                self.image = self.walk1 if self.image != self.walk1 else self.walk2
+        else:
+            self.gravity += 1
+            self.rect.bottom += self.gravity
+
+            if self.gravity > 0:
+                self.image = self.fall
+
+            if self.rect.bottom > self.originalPos:
+                self.jumpState = False
+                self.rect.bottom = self.originalPos
+
