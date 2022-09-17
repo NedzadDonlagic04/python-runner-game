@@ -1,6 +1,7 @@
 import pygame
 from sys import exit
 from classes import *
+from random import choice
 
 class Game():
 
@@ -52,6 +53,9 @@ class Game():
         self.player = pygame.sprite.GroupSingle( Player( (ground.rect.left + 50, ground.rect.top) ) )
         self.playerScore = PlayerScore(50, self.SCREEN_WIDTH)
 
+        self.mobs = pygame.sprite.Group()
+        self.mobSpawn = None
+
     def quit(self):
         pygame.quit()
         exit()
@@ -85,6 +89,9 @@ class Game():
                         self.background[0].speed = 2
                         self.background[1].speed = 2
                         self.playerScore.start_time = pygame.time.get_ticks()
+
+                        self.mobs.add(choice( [Mob('snail', (800, 300))] * 3 + [Mob('fly', (800, 200))]))
+                        self.mobSpawn = pygame.time.get_ticks()
                 
                 elif self.current_state == self.PLAYING and event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
@@ -108,6 +115,18 @@ class Game():
 
                 self.playerScore.update(pygame.time.get_ticks())
                 self.playerScore.draw(self.screen)
+
+                self.mobs.update()
+                self.mobs.draw(self.screen)
+
+                if pygame.sprite.spritecollide(self.player.sprite, self.mobs, False):
+                    self.mobs.empty()
+                    self.current_state = self.GAME_OVER
+                    self.arrows.fillPositions(self.states[self.GAME_OVER])
+                
+                if pygame.time.get_ticks() - self.mobSpawn > 1500:
+                    self.mobs.add(choice( [Mob('snail', (800, 300))] * 3 + [Mob('fly', (800, 200))]))
+                    self.mobSpawn = pygame.time.get_ticks()
 
             pygame.display.update()
             self.clock.tick()
