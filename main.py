@@ -1,3 +1,4 @@
+from sre_constants import JUMP
 import pygame
 from sys import exit
 from classes import *
@@ -21,8 +22,8 @@ class Game():
 
         self.clock = Clock(60)
 
-        sky = Background('./images/sky.jpg', (0, 0), self.SCREEN_WIDTH)
-        ground = Background('./images/ground.jpg', sky.rect.bottomleft, self.SCREEN_WIDTH)
+        sky = Background('./images/background/sky.jpg', (0, 0), self.SCREEN_WIDTH)
+        ground = Background('./images/background/ground.jpg', sky.rect.bottomleft, self.SCREEN_WIDTH)
         self.background = [sky, ground]
 
         gameName = Text(150, (self.SCREEN_WIDTH / 2, 100), 'Runner')
@@ -44,6 +45,8 @@ class Game():
 
         self.arrows = TextArrows(self.states[self.current_state])
 
+        self.player = pygame.sprite.GroupSingle( Player( (ground.rect.left + 50, ground.rect.top) ) )
+
     def quit(self):
         pygame.quit()
         exit()
@@ -55,6 +58,10 @@ class Game():
                     self.quit()
 
                 elif self.current_state != self.PLAYING and event.type == pygame.KEYDOWN:
+                    
+                    self.background[0].speed = 1
+                    self.background[1].speed = 1
+
                     if event.key == pygame.K_UP:
                         self.arrows.moveUp()
 
@@ -70,6 +77,12 @@ class Game():
 
                     elif ( self.current_state == self.MAIN_MENU or self.current_state == self.GAME_OVER ) and event.key == pygame.K_RETURN and not self.arrows.index:
                         self.current_state = self.PLAYING
+                        self.background[0].speed = 2
+                        self.background[1].speed = 2
+                
+                elif self.current_state == self.PLAYING and event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+                        self.player.update(jump=True)
         
             for bg in self.background:
                 bg.update()
@@ -84,7 +97,8 @@ class Game():
                 self.arrows.draw(self.screen)
             
             else:
-                print('Gaming')
+                self.player.update()
+                self.player.draw(self.screen)
 
             pygame.display.update()
             self.clock.tick()
