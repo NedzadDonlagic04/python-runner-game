@@ -1,18 +1,34 @@
+from asyncio import get_child_watcher
 import pygame
+import math
 
 class Clock():
     def __init__(self, fps):
-        self.fps = fps
+        self.FPS = fps
         self.clock = pygame.time.Clock()
 
     def tick(self):
-        self.clock.tick(self.fps)
+        self.clock.tick(self.FPS)
 
-class Background(pygame.sprite.Sprite):
-    def __init__(self, path, pos):
+class Background():
+    def __init__(self, path, pos, SCREEN_WIDTH):
         super().__init__()
         self.image = pygame.image.load(path).convert()
         self.rect = self.image.get_rect( topleft = pos )
+
+        self.count = math.ceil( SCREEN_WIDTH / self.image.get_width() ) + 1
+        self.scroll = 0
+
+    def update(self):
+        self.scroll -= 1
+
+        if self.scroll < self.image.get_width() * -1:
+            self.scroll = 0
+
+    def draw(self, screen):
+        for i in range(0, self.count):
+            screen.blit(self.image, (i * self.image.get_width() + self.scroll, self.rect.top))
+        
 
 class Text(pygame.sprite.Sprite):
     def __init__(self, font_size, pos, text, color='Black'):
@@ -70,5 +86,3 @@ class TextArrows():
         else:
             self.index += 1
         self.sound.play()
-        
-
