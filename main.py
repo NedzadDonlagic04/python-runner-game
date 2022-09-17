@@ -1,4 +1,3 @@
-from sre_constants import JUMP
 import pygame
 from sys import exit
 from classes import *
@@ -17,8 +16,13 @@ class Game():
         self.screen = pygame.display.set_mode((width, height))
 
         pygame.display.set_caption(title)
-
         pygame.mouse.set_visible(False)
+        icon = pygame.image.load('./images/gameIcon.ico').convert_alpha()
+        pygame.display.set_icon(icon)
+
+        gameSound = pygame.mixer.Sound('./sounds/gameMusic.wav')
+        gameSound.play(-1)
+        gameSound.set_volume(0.3)
 
         self.clock = Clock(60)
 
@@ -46,6 +50,7 @@ class Game():
         self.arrows = TextArrows(self.states[self.current_state])
 
         self.player = pygame.sprite.GroupSingle( Player( (ground.rect.left + 50, ground.rect.top) ) )
+        self.playerScore = PlayerScore(50, self.SCREEN_WIDTH)
 
     def quit(self):
         pygame.quit()
@@ -79,6 +84,7 @@ class Game():
                         self.current_state = self.PLAYING
                         self.background[0].speed = 2
                         self.background[1].speed = 2
+                        self.playerScore.start_time = pygame.time.get_ticks()
                 
                 elif self.current_state == self.PLAYING and event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
@@ -99,6 +105,9 @@ class Game():
             else:
                 self.player.update()
                 self.player.draw(self.screen)
+
+                self.playerScore.update(pygame.time.get_ticks())
+                self.playerScore.draw(self.screen)
 
             pygame.display.update()
             self.clock.tick()
