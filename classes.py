@@ -1,6 +1,8 @@
+# Importing the needed modules
 import pygame
 import math
 
+# Class used to keep track of the fps and make sure the fps never goes above a set limit
 class Clock():
     def __init__(self, fps):
         self.FPS = fps
@@ -9,6 +11,7 @@ class Clock():
     def tick(self):
         self.clock.tick(self.FPS)
 
+# Class used to display and loop a given background image
 class Background():
     def __init__(self, path, pos, SCREEN_WIDTH):
         super().__init__()
@@ -30,6 +33,7 @@ class Background():
             screen.blit(self.image, (i * self.image.get_width() + self.scroll, self.rect.top))
         
 
+# Class used to display text on the screen
 class Text(pygame.sprite.Sprite):
     def __init__(self, font_size, pos, text, color='Black'):
         super().__init__()
@@ -38,6 +42,7 @@ class Text(pygame.sprite.Sprite):
         self.image = self.text_font.render(text, False, color)
         self.rect = self.image.get_rect( center = pos )
 
+# Class used to display arrows next to given text, to help with the selection process
 class TextArrows():
     def __init__(self, text_rects):
         self.positions = None
@@ -87,6 +92,7 @@ class TextArrows():
             self.index += 1
         self.sound.play()
 
+# Class used to represent the player, includes player movement and animations
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
@@ -130,6 +136,7 @@ class Player(pygame.sprite.Sprite):
                 self.jumpState = False
                 self.rect.bottom = self.originalPos
 
+# Class used to keep track of the player score, which is just seconds passed since the current game started
 class PlayerScore():
     def __init__(self, font_size, width):
         self.text = Text(font_size, (width / 2, 50), 'Score:')
@@ -161,6 +168,9 @@ class PlayerScore():
         screen.blit(self.text.image, self.text.rect)
         screen.blit(self.score.image, self.score.rect)
 
+# Class used to represent a mob / enemy on the screen
+# Contains only 2 mob types, snail and fly
+# Contains all animations for said mobs as well as movement and deletion once they go off screen
 class Mob(pygame.sprite.Sprite):
     def __init__(self, mob, pos):
         super().__init__()
